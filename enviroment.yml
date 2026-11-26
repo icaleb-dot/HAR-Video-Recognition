@@ -1,0 +1,23 @@
+
+name: har_project
+
+channels:
+  - conda-forge
+  - defaults
+
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      - opencv-python
+      - numpy
+      - pandas
+      - matplotlib
+      - seaborn
+      - scikit-learn
+      - tqdm
+      - PyYAML
+      - huggingface_hub
+      - streamlit
+      - ipykernel
+      - jupyter
