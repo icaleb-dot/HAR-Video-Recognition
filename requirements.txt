@@ -1,0 +1,34 @@
+
+# Deep Learning
+torch
+torchvision
+
+# Computer Vision
+opencv-python
+
+# Data Processing
+numpy
+pandas
+
+# Visualization
+matplotlib
+seaborn
+
+# Machine Learning Metrics
+scikit-learn
+
+# Progress bars
+tqdm
+
+# Configuration
+PyYAML
+
+# Dataset management (optional)
+huggingface_hub
+
+# Interactive application (future inference interface)
+streamlit
+
+# Development
+ipykernel
+jupyter
