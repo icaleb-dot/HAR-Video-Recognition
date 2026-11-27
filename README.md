@@ -113,8 +113,9 @@ test_loader = dataloaders["test"]
 
 ## Flujo de trabajo en equipo (GitHub)
 
-- **Integrante 1 (Datos e Integración):** `src/data/`, `config/config.yaml`, integración de PRs e interfaz de inferencia (`gradio`).
-- **Integrante 2 (Modelos y Entrenamiento):** `src/models/` y `src/training/`.
-- **Integrante 3 (Evaluación y Experimentos):** `src/evaluation/`, `results/` y `experiments/`.
+- **Integrante 1 (Datos e Infraestructura):** `src/data/`, `config/config.yaml`, documentación e integración de PRs.
+- **Integrante 2 (Arquitecturas de Modelos):** `src/models/` (baseline CNN+RNN/Pooling y modelos 3D como `r3d_18`).
+- **Integrante 3 (Entrenamiento y Experimentos):** `src/training/`, `checkpoints/` y ablaciones en `experiments/`.
+- **Integrante 4 (Evaluación e Interfaz):** `src/evaluation/`, `results/` (métricas/gráficas) y demo de inferencia con `gradio`.
 
-Trabajar en ramas separadas (`feat/models-training`, `feat/evaluation-analysis`) y abrir Pull Requests hacia `main`. Nunca subir archivos de `data/`, `checkpoints/*.pth` ni `results/`.
+Trabajar en ramas separadas (`feat/models`, `feat/training`, `feat/evaluation-ui`) y abrir Pull Requests hacia `main`. Nunca subir archivos de `data/`, `checkpoints/*.pth` ni `results/`.
