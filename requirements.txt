@@ -27,8 +27,7 @@ PyYAML
 huggingface_hub
 
 # Interactive application (future inference interface)
-streamlit
+gradio
 
 # Development
 ipykernel
-jupyter

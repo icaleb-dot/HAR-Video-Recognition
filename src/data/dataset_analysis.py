@@ -6,9 +6,6 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 
 
-# ==========================================
-# CONFIGURATION
-# ==========================================
 
 DATASET_PATH = Path("data/processed/UCF101_subset")
 
@@ -17,9 +14,6 @@ SPLITS = ["train", "val", "test"]
 VIDEO_EXTENSIONS = [".avi", ".mp4", ".mov"]
 
 
-# ==========================================
-# VIDEO ANALYSIS
-# ==========================================
 
 def analyze_video(video_path):
     """
@@ -51,9 +45,6 @@ def analyze_video(video_path):
     }
 
 
-# ==========================================
-# DATASET ANALYSIS
-# ==========================================
 
 def analyze_dataset():
 
@@ -104,9 +95,6 @@ def analyze_dataset():
     return pd.DataFrame(records)
 
 
-# ==========================================
-# STATISTICS
-# ==========================================
 
 def generate_statistics(df):
 
@@ -134,9 +122,6 @@ def generate_statistics(df):
     print(df["fps"].describe())
 
 
-# ==========================================
-# VISUALIZATION
-# ==========================================
 
 def plot_class_distribution(df):
 
@@ -169,10 +154,6 @@ def plot_class_distribution(df):
 
     plt.show()
 
-
-# ==========================================
-# MAIN
-# ==========================================
 
 if __name__ == "__main__":
 
