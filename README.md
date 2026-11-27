@@ -121,3 +121,5 @@ test_loader = dataloaders["test"]
 - **Integrante 4 (Evaluación e Interfaz):** `src/evaluation/`, `results/` (métricas/gráficas) y demo de inferencia con `gradio`.
 
 Trabajar en ramas separadas (`feat/data-infra`, `feat/models`, `feat/training`, `feat/evaluation-ui`) y abrir Pull Requests hacia `main`. Nunca subir archivos de `data/`, `checkpoints/` ni resultados generados en `results/`.
+
+El estado de la entrega del integrante 1 y las instrucciones para iniciar el trabajo del integrante 2 están en [docs/integrante-1-datos-infraestructura.md](docs/integrante-1-datos-infraestructura.md). El [PR #1](https://github.com/icaleb-dot/HAR-Video-Recognition/pull/1) contiene la entrega y requiere revisión antes de integrarse a `main`.
