@@ -18,6 +18,6 @@ dependencies:
       - tqdm
       - PyYAML
       - huggingface_hub
-      - streamlit
+      - gradio
       - ipykernel
       - jupyter

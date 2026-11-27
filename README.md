@@ -66,6 +66,8 @@ conda env create -f enviroment.yml
 conda activate har_project
 ```
 
+> **Nota sobre PyTorch (`torch` / `torchvision`):** Si usas `conda` (o quieres una versión específica de CUDA para tu GPU), instala `torch` y `torchvision` por separado siguiendo las instrucciones oficiales de [pytorch.org](https://pytorch.org/get-started/locally/) según tu hardware (GPU CUDA o solo CPU).
+
 ---
 
 ## Preparación de datos y pruebas
