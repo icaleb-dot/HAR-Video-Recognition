@@ -42,7 +42,9 @@ HAR-Video-Recognition/
 │   ├── training/                # Loop de entrenamiento, early stopping y checkpoints
 │   └── evaluation/              # Métricas en test, matriz de confusión y análisis
 ├── requirements.txt
-└── enviroment.yml
+├── docs/
+│   └── integrante-1-datos-infraestructura.md
+└── environment.yml
 ```
 
 ---
@@ -62,7 +64,7 @@ pip install -r requirements.txt
 
 ### Opción B: `conda`
 ```bash
-conda env create -f enviroment.yml
+conda env create -f environment.yml
 conda activate har_project
 ```
 
@@ -105,7 +107,7 @@ test_loader = dataloaders["test"]
   - `B`: `batch_size` (definido en `config/config.yaml`)
   - `C`: `3` canales (RGB normalizados con media/desviación estándar de Kinetics-400)
   - `T`: `num_frames` frames muestreados uniformemente por video (por defecto `16`)
-  - `H, W`: `img_size` (por defecto `112 x 112`)
+  - `H, W`: `image_size` (por defecto `112 x 112`)
 - **Etiquetas (`labels`):** `torch.int64` con forma **`(B,)`** y valores en `[0, num_classes - 1]`.
 - **Mapeo de clases (`class_to_idx`):** Diccionario `{nombre_clase: indice}` consistente en `train`, `val` y `test`.
 
@@ -118,4 +120,4 @@ test_loader = dataloaders["test"]
 - **Integrante 3 (Entrenamiento y Experimentos):** `src/training/`, `checkpoints/` y ablaciones en `experiments/`.
 - **Integrante 4 (Evaluación e Interfaz):** `src/evaluation/`, `results/` (métricas/gráficas) y demo de inferencia con `gradio`.
 
-Trabajar en ramas separadas (`feat/models`, `feat/training`, `feat/evaluation-ui`) y abrir Pull Requests hacia `main`. Nunca subir archivos de `data/`, `checkpoints/*.pth` ni `results/`.
+Trabajar en ramas separadas (`feat/data-infra`, `feat/models`, `feat/training`, `feat/evaluation-ui`) y abrir Pull Requests hacia `main`. Nunca subir archivos de `data/`, `checkpoints/` ni resultados generados en `results/`.
