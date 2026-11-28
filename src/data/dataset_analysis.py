@@ -1,174 +1,71 @@
+"""Create per-video metadata, class counts, and a class-distribution figure."""
+from __future__ import annotations
 
-import cv2
-import pandas as pd
-import matplotlib.pyplot as plt
-
+import argparse
 from pathlib import Path
 
+import cv2
+import matplotlib.pyplot as plt
+import pandas as pd
+
+from src.data.dataset import load_config
 
 
-DATASET_PATH = Path("data/processed/UCF101_subset")
-
-SPLITS = ["train", "val", "test"]
-
-VIDEO_EXTENSIONS = [".avi", ".mp4", ".mov"]
-
-
-
-def analyze_video(video_path):
-    """
-    Extract basic metadata from a video.
-    """
-
-    cap = cv2.VideoCapture(str(video_path))
-
-    if not cap.isOpened():
-        return None
-
-    fps = cap.get(cv2.CAP_PROP_FPS)
-    frame_count = cap.get(cv2.CAP_PROP_FRAME_COUNT)
-
-    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-
-    duration = frame_count / fps if fps > 0 else 0
-
-    cap.release()
-
-    return {
-        "fps": fps,
-        "frame_count": int(frame_count),
-        "duration": duration,
-        "width": width,
-        "height": height,
-        "resolution": f"{width}x{height}"
-    }
-
-
-
-def analyze_dataset():
-
+def analyze_dataset(config_path: str | Path = "config/config.yaml") -> pd.DataFrame:
+    config = load_config(config_path)
+    root = Path(config["paths"]["extracted_root"])
+    classes = config["classes"]
     records = []
-
-    print("\nStarting dataset analysis...\n")
-
-    for split in SPLITS:
-
-        split_path = DATASET_PATH / split
-
-        if not split_path.exists():
-            print(f"[WARNING] Missing split: {split}")
-            continue
-
-        for class_path in sorted(split_path.iterdir()):
-
-            if not class_path.is_dir():
-                continue
-
-            class_name = class_path.name
-
-            videos = [
-                path for path in class_path.iterdir()
-                if path.suffix.lower() in VIDEO_EXTENSIONS
-            ]
-
-            print(
-                f"Processing {split}/{class_name}: "
-                f"{len(videos)} videos"
-            )
-
+    for split in ("train", "val", "test"):
+        for class_name in classes:
+            videos = sorted((root / split / class_name).glob("*.avi"))
             for video_path in videos:
-
-                metadata = analyze_video(video_path)
-
-                if metadata is None:
-                    print(f"[ERROR] Cannot open: {video_path}")
+                cap = cv2.VideoCapture(str(video_path))
+                if not cap.isOpened():
+                    print(f"[WARN] No se pudo abrir: {video_path}")
+                    cap.release()
                     continue
-
-                records.append({
-                    "split": split,
-                    "class": class_name,
-                    "video": video_path.name,
-                    **metadata
-                })
-
+                fps = float(cap.get(cv2.CAP_PROP_FPS))
+                frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+                width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+                height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+                cap.release()
+                records.append({"split": split, "class": class_name, "video": video_path.name,
+                    "path": str(video_path), "frame_count": frames, "fps": fps,
+                    "duration_seconds": frames / fps if fps > 0 else 0.0,
+                    "width": width, "height": height, "resolution": f"{width}x{height}"})
+    if not records:
+        raise FileNotFoundError(f"No se encontraron videos AVI bajo {root}; extrae el TAR primero.")
     return pd.DataFrame(records)
 
 
-
-def generate_statistics(df):
-
-    if df.empty:
-        print("No valid videos found.")
-        return
-
-    print("\n========== DATASET SUMMARY ==========")
-
-    print(f"\nTotal videos: {len(df)}")
-
-    print("\nVideos per split:")
-    print(df["split"].value_counts())
-
-    print("\nVideos per class:")
-    print(df.groupby(["split", "class"]).size())
-
-    print("\nDuration statistics:")
-    print(df["duration"].describe())
-
-    print("\nResolution distribution:")
-    print(df["resolution"].value_counts())
-
-    print("\nFPS distribution:")
-    print(df["fps"].describe())
-
-
-
-def plot_class_distribution(df):
-
-    if df.empty:
-        return
-
-    distribution = (
-        df.groupby(["class", "split"])
-        .size()
-        .unstack(fill_value=0)
-    )
-
-    distribution.plot(
-        kind="bar",
-        figsize=(14, 6)
-    )
-
-    plt.title("UCF101 Subset - Class Distribution")
-    plt.xlabel("Activity")
-    plt.ylabel("Number of videos")
-
+def generate_outputs(frame: pd.DataFrame, results_dir: str | Path = "results") -> None:
+    metrics_dir, figures_dir = Path(results_dir) / "metrics", Path(results_dir) / "figures"
+    metrics_dir.mkdir(parents=True, exist_ok=True)
+    figures_dir.mkdir(parents=True, exist_ok=True)
+    frame.to_csv(metrics_dir / "dataset_metadata.csv", index=False)
+    counts = frame.groupby(["split", "class"]).size().unstack(fill_value=0)
+    counts.to_csv(metrics_dir / "class_distribution.csv")
+    counts.plot(kind="bar", figsize=(13, 6))
+    plt.title("UCF101 subset: videos por clase y split")
+    plt.xlabel("Actividad")
+    plt.ylabel("Número de videos")
     plt.xticks(rotation=45, ha="right")
     plt.tight_layout()
+    plt.savefig(figures_dir / "class_distribution.png", dpi=150)
+    plt.close()
+    print(f"Videos analizados: {len(frame)}")
+    print(counts.to_string())
+    print(f"Resultados guardados en {metrics_dir} y {figures_dir}")
 
-    output_path = Path("results/figures")
 
-    output_path.mkdir(parents=True, exist_ok=True)
-
-    plt.savefig(output_path / "class_distribution.png")
-
-    plt.show()
+def main(config_path: str | Path = "config/config.yaml") -> None:
+    config = load_config(config_path)
+    frame = analyze_dataset(config_path)
+    generate_outputs(frame, config["paths"].get("results", "results"))
 
 
 if __name__ == "__main__":
-
-    df = analyze_dataset()
-
-    generate_statistics(df)
-
-    plot_class_distribution(df)
-
-    output_path = Path("results/metrics")
-    output_path.mkdir(parents=True, exist_ok=True)
-
-    df.to_csv(
-        output_path / "dataset_metadata.csv",
-        index=False
-    )
-
-    print("\nAnalysis completed successfully.")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--config", default="config/config.yaml")
+    main(parser.parse_args().config)

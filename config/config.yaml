@@ -1,60 +1,37 @@
-# ============================================================
-# HAR Video Recognition - Central Configuration
-# ============================================================
-
-project:
-  name: "HAR-Video-Recognition"
-  seed: 42
-  device: "cuda"  # Se usará "cpu" automáticamente si CUDA no está disponible
-
-data:
-  raw_archive: "data/raw/UCF101_subset.tar"
-  dataset_dir: "data/processed/UCF101_subset"
-  splits:
-    train: "train"
-    val: "val"
-    test: "test"
-  video_extensions: [".avi", ".mp4", ".mov"]
-
-  # Lista oficial de actividades a clasificar.
-  # Nota: En data/processed/UCF101_subset también existe la carpeta "ApplyEyeMakeup".
-  # Si desean incluirla, agréguenla a esta lista.
-  classes:
-    - "ApplyLipstick"
-    - "Archery"
-    - "BabyCrawling"
-    - "BalanceBeam"
-    - "BandMarching"
-    - "BaseballPitch"
-    - "Basketball"
-    - "BasketballDunk"
-    - "BenchPress"
-
-preprocessing:
-  num_frames: 16          # Frames muestreados uniformemente por video (T)
-  img_size: [112, 112]    # [Height, Width] - usar [224, 224] para backbones 2D/ImageNet si hay GPU suficiente
-  # Media y desviación estándar estándar de Kinetics-400 (torchvision.models.video)
+# Configuración central del proyecto HAR-Video-Recognition
+seed: 42
+paths:
+  archive: data/raw/UCF101_subset.tar
+  extracted_root: data/processed/UCF101_subset
+  results: results
+  checkpoints: checkpoints
+classes:
+  - ApplyLipstick
+  - Archery
+  - BabyCrawling
+  - BalanceBeam
+  - BandMarching
+  - BaseballPitch
+  - Basketball
+  - BasketballDunk
+  - BenchPress
+video:
+  num_frames: 16
+  image_size: 112
   mean: [0.43216, 0.394666, 0.37645]
   std: [0.22803, 0.22145, 0.216989]
-
-augmentation:
+  train_temporal_augmentation: true
   horizontal_flip_prob: 0.5
   brightness_jitter: 0.15
   contrast_jitter: 0.15
-
-dataloader:
-  batch_size: 8
-  num_workers: 2          # En Windows usar 0 si hay problemas con multiprocessing
-  pin_memory: true
-
 training:
+  batch_size: 4
+  num_workers: 2
+  pin_memory: true
   epochs: 25
   learning_rate: 0.0003
   weight_decay: 0.0001
   early_stopping_patience: 5
-  checkpoints_dir: "checkpoints"
-
 evaluation:
-  results_dir: "results"
-  metrics_dir: "results/metrics"
-  figures_dir: "results/figures"
+  metrics_dir: results/metrics
+  figures_dir: results/figures
